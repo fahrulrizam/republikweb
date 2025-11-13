@@ -1,86 +1,126 @@
+// server.js
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-// Variabel penting
-// Tentukan path untuk file JSON penyimpanan data, agar bisa diakses di manapun.
-const filePath = path.join(__dirname, "registration.json");
+// Lokasi file penyimpanan data
+const registrationFile = path.join(__dirname, "registration.json");
+const newsletterFile = path.join(__dirname, "newsletter.json"); // 🔥 file baru untuk newsletter
 
 // Middleware
-// Mengizinkan Cross-Origin Resource Sharing (CORS)
-// Ini penting agar React (misalnya di port 3000) bisa berkomunikasi dengan server (di port 5000)
-app.use(cors());
-// Mengizinkan server membaca data JSON dari body request
+app.use(cors({
+    origin: 'http://localhost:3000' // ganti sesuai port React-mu jika perlu
+}));
 app.use(express.json());
 
-// --- Route GET untuk testing di browser ---
-// Anda bisa buka http://localhost:5000/api/register di browser untuk tes
-app.get("/api/register", (req, res) => {
-  res.status(200).send("API /api/register siap menerima POST request!");
+// --- Helper Fungsi Umum ---
+const ensureFileExists = (filePath) => {
+    if (!fs.existsSync(filePath)) fs.writeFileSync(filePath, "[]", "utf8");
+};
+
+const readJSON = (filePath) => {
+    ensureFileExists(filePath);
+    const data = fs.readFileSync(filePath, "utf8");
+    try {
+        return JSON.parse(data || "[]");
+    } catch {
+        return [];
+    }
+};
+
+const writeJSON = (filePath, data) => {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+};
+
+// --- ROUTE UTAMA (untuk testing) ---
+app.get("/", (req, res) => {
+    res.send("<h2>✅ Server Aktif di http://localhost:5000</h2>");
 });
 
-// --- Route POST untuk pendaftaran ---
-// Ini adalah endpoint yang akan dipanggil oleh client saat form di-submit
+// --- ENDPOINT PENDAFTARAN (existing) ---
+app.get("/api/registrations", (req, res) => {
+    const data = readJSON(registrationFile);
+    res.json(data);
+});
+
 app.post("/api/register", (req, res) => {
-  const data = req.body; // data dari client (React)
+    const {
+        nama, email, whatsapp, sekolah, jurusan, posisi, link_cv, motivasi,
+    } = req.body;
 
-  // Validasi data dasar (pastikan body tidak kosong)
-  if (!data || Object.keys(data).length === 0) {
-    return res.status(400).json({ message: "Bad Request: Body data tidak boleh kosong" });
-  }
-  
-  // 1. Baca file JSON yang sudah ada
-  fs.readFile(filePath, "utf8", (err, fileData) => {
-    let registrations = [];
-    
-    // Jika file tidak ada atau ada error saat membaca (err), kita akan mulai dengan array kosong.
-    // Jika file ada dan tidak kosong, coba parse datanya.
-    if (!err && fileData) {
-      try {
-        registrations = JSON.parse(fileData);
-        // Pastikan itu adalah array, jika tidak, inisialisasi ulang.
-        if (!Array.isArray(registrations)) {
-            registrations = [];
-        }
-      } catch (parseErr) {
-        console.error("Error parsing JSON. File mungkin korup. Memulai dengan array kosong:", parseErr.message);
-        registrations = [];
-      }
-    }
+    console.log('📦 Data Diterima:', req.body);
 
-    // 2. Tambahkan data baru ke dalam array
-    console.log("Menerima data baru:", data);
-    registrations.push({ 
-        id: Date.now(), // Tambahkan ID unik sederhana
-        timestamp: new Date().toISOString(),
-        ...data 
-    });
+    const requiredFields = [nama, email, whatsapp, sekolah, jurusan, posisi, link_cv, motivasi];
+    const incomplete = requiredFields.some(f => !f || (typeof f === "string" && f.trim() === ""));
+    if (incomplete) {
+        return res.status(400).json({ message: "Data wajib tidak lengkap." });
+    }
 
-    // 3. Tulis kembali (overwrite) seluruh array ke file
-    // Gunakan indentasi 2 spasi untuk format JSON yang rapi (null, 2)
-    fs.writeFile(filePath, JSON.stringify(registrations, null, 2), (writeErr) => {
-      if (writeErr) {
-        console.error("Error menulis file:", writeErr);
-        return res.status(500).json({ message: "Gagal menyimpan data di server" });
-      }
+    try {
+        const registrations = readJSON(registrationFile);
+        const newEntry = {
+            id: Date.now(),
+            nama,
+            email,
+            whatsapp,
+            sekolah,
+            jurusan,
+            posisi,
+            link_cv,
+            motivasi,
+            created_at: new Date().toISOString(),
+        };
+        registrations.push(newEntry);
+        writeJSON(registrationFile, registrations);
 
-      console.log("Data berhasil disimpan ke registration.json");
-      // Kirim respon sukses kembali ke client
-      res.status(201).json({ 
-        message: "Data pendaftaran berhasil disimpan!", 
-        data: registrations[registrations.length - 1] // Kirim kembali data yang baru disimpan
-      });
-    });
-  });
+        console.log(`✅ Data baru disimpan: ${nama} (${email})`);
+        res.status(201).json({ message: "Pendaftaran berhasil!", entry: newEntry });
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: "Kesalahan internal server." });
+    }
+});
+
+// --- ENDPOINT BARU: Newsletter ---
+app.post("/api/newsletter", (req, res) => {
+    const { email } = req.body;
+
+    if (!email || !email.includes("@")) {
+        return res.status(400).json({ message: "Alamat email tidak valid." });
+    }
+
+    try {
+        const list = readJSON(newsletterFile);
+
+        // Cek apakah email sudah terdaftar
+        if (list.some(item => item.email === email)) {
+            return res.status(409).json({ message: "Email sudah terdaftar di newsletter." });
+        }
+
+        const newEntry = {
+            id: Date.now(),
+            email,
+            created_at: new Date().toISOString(),
+        };
+
+        list.push(newEntry);
+        writeJSON(newsletterFile, list);
+
+        console.log(`📧 Email baru ditambahkan ke newsletter: ${email}`);
+        res.status(201).json({ message: "Email berhasil ditambahkan ke newsletter!" });
+    } catch (error) {
+        console.error("❌ Gagal menyimpan newsletter:", error);
+        res.status(500).json({ message: "Terjadi kesalahan server." });
+    }
 });
 
 // Jalankan server
 app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`);
-  // Variabel filePath sekarang bisa diakses di sini tanpa error
-  console.log("File penyimpanan data ada di:", filePath);
+    console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
+    console.log(`🗂️  Pendaftaran disimpan di: ${registrationFile}`);
+    console.log(`📰  Newsletter disimpan di: ${newsletterFile}`);
 });

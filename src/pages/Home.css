@@ -772,61 +772,102 @@ section {
 
 
 /* =================================================================
- * 4. GALERI KEGIATAN (DIPERBAIKI) 🖼️
+ * 4. GALERI KEGIATAN (VERSI RAPI & RESPONSIF MENGGUNAKAN CSS GRID)
  * ================================================================= */
 
-/* Kontainer utama galeri */
-.gallery-grid-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; 
-    padding: 0 15px; 
+/* --- Grid Utama Galeri (BARU) --- */
+.gallery-grid {
+  display: grid;
+  /* Buat 2 kolom: kolom kiri 2x lebih lebar dari kolom kanan */
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
 }
 
-/* Card/Wrapper Gambar */
+/* --- Wrapper Setiap Gambar (MODIFIKASI) --- */
 .gallery-image-wrapper {
-    min-height: 250px; 
-    background-size: cover;
-    background-position: center;
-    border-radius: 15px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 4px 10px var(--black-transparent-10);
-    transition: transform 0.3s, box-shadow 0.3s; /* Penambahan: Transisi bayangan */
-    cursor: pointer;
-    display: block;
-    width: 100%;
-    height: 100%; 
+  position: relative;
+  width: 100%;
+  /* PENTING: Set tinggi ke 100% agar mengisi area grid-nya */
+  height: 100%;
+  /* Tinggi minimum agar tidak kolaps jika gambar gagal dimuat */
+  min-height: 180px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
+/* --- Gambar Besar (BARU) --- */
+/* Kita gunakan :first-child untuk menargetkan item pertama secara otomatis */
+.gallery-grid > *:first-child {
+  /* KUNCI: Buat item pertama mencakup 3 baris secara vertikal */
+  grid-row: span 3;
+}
+
+/* --- Efek Hover Gambar (Kode Asli Anda) --- */
 .gallery-image-wrapper:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 20px var(--black-transparent-20); /* Penambahan: Bayangan hover yang lebih kuat */
+  transform: scale(1.03);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* --- Overlay (Kode Asli Anda) --- */
 .gallery-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.0));
-    color: var(--white);
-    padding: 20px;
-    transition: background 0.3s;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 1.2rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.gallery-overlay h5 {
-    color: var(--white);
-    font-weight: 600;
-    margin-bottom: 5px;
-    font-size: 1.1rem;
+.gallery-image-wrapper:hover .gallery-overlay {
+  opacity: 1;
 }
 
+/* --- Teks di Dalam Overlay (Kode Asli Anda) --- */
 .gallery-overlay p {
-    font-size: 0.9rem;
-    color: var(--white-transparent-80);
-    margin-bottom: 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
 }
+
+.gallery-overlay span {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* --- Responsif (MODIFIKASI) --- */
+@media (max-width: 992px) {
+  /* Ubah jadi 1 kolom di tablet/mobile */
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Reset span baris agar semua item jadi sama besar */
+  .gallery-grid > *:first-child {
+    grid-row: span 1;
+  }
+
+  /* Beri tinggi yg seragam di mode 1 kolom */
+  .gallery-image-wrapper {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .gallery-image-wrapper {
+    min-height: 200px;
+  }
+}
+
+
 
 
 /* =================================================================
