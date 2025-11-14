@@ -170,5 +170,65 @@
     "link_cv": "https://drive.google.com/drive/",
     "motivasi": "keren",
     "created_at": "2025-11-13T09:53:40.811Z"
+  },
+  {
+    "id": 1763031465994,
+    "nama": "rizam",
+    "email": "staff@stockify.test",
+    "whatsapp": "08527327097895",
+    "sekolah": "uad",
+    "jurusan": "sistem informasi",
+    "posisi": "UI/UX Designer",
+    "link_cv": "https://drive.google.com/drive/",
+    "motivasi": "bagus",
+    "created_at": "2025-11-13T10:57:45.994Z"
+  },
+  {
+    "id": 1763031561914,
+    "nama": "farnia rustika",
+    "email": "admin@app.com",
+    "whatsapp": "08527327097895",
+    "sekolah": "utdi",
+    "jurusan": "informatika",
+    "posisi": "Programmer",
+    "link_cv": "https://drive.google.com/drive/",
+    "motivasi": "bagus",
+    "created_at": "2025-11-13T10:59:21.914Z"
+  },
+  {
+    "id": 1763040512173,
+    "nama": "nia",
+    "email": "nia@gmail.com",
+    "whatsapp": "08527327097895",
+    "sekolah": "ubb",
+    "jurusan": "informatika",
+    "posisi": "Programmer",
+    "link_cv": "https://drive.google.com/drive/",
+    "motivasi": "bagus",
+    "created_at": "2025-11-13T13:28:32.173Z"
+  },
+  {
+    "id": 1763040544612,
+    "nama": "cimon",
+    "email": "cimon@gmail.com",
+    "whatsapp": "08527327097895",
+    "sekolah": "ugm",
+    "jurusan": "multimedia",
+    "posisi": "Programmer",
+    "link_cv": "https://drive.google.com/drive/",
+    "motivasi": "bagus",
+    "created_at": "2025-11-13T13:29:04.612Z"
+  },
+  {
+    "id": 1763104822759,
+    "nama": "hairi",
+    "email": "hairi@gmail.com",
+    "whatsapp": "082245329876",
+    "sekolah": "uad",
+    "jurusan": "manajemen ",
+    "posisi": "Digital Marketing",
+    "link_cv": "https://drive.google.com/drive/",
+    "motivasi": "keren",
+    "created_at": "2025-11-14T07:20:22.759Z"
   }
 ]

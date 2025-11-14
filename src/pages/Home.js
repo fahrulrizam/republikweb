@@ -13,7 +13,7 @@ import {
 import {
     FaRocket, FaCheck, FaStar, FaCode, FaVideo, FaChartLine,
     FaSearch, FaRegQuestionCircle, FaMapMarkerAlt, FaEnvelope,
-    FaWhatsapp, FaInstagram, FaFacebookF, FaLinkedinIn, FaTwitter, FaTrophy,
+    FaWhatsapp, FaInstagram, FaTwitter, FaTrophy,
     FaUserTie, FaPalette, FaLaptopCode, FaCalendarAlt, FaQuoteRight, FaPaperPlane, FaUserCheck,
     FaUserFriends,
     FaChevronUp,
