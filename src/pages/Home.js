@@ -187,7 +187,7 @@ const FooterComponent = () => (
             }
 
             try {
-                const response = await fetch("https://republik-web-api.onrender.com", {
+                const response = await fetch("https://republik-web-api.onrender.com/api/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -288,7 +288,7 @@ const Home = () => {
         }
 
         try {
-            const response = await fetch("https://republik-web-api.onrender.com", {
+            const response = await fetch("https://republik-web-api.onrender.com/api/register", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
